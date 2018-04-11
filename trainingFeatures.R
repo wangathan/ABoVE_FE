@@ -29,12 +29,13 @@ source("featureFunctions.R")
 
 coef_files = list.files("../../data/training_coefs",
 												full.names=T)
+coef_files = coef_files[!grepl("TL|LC",coef_files)]
 
 registerDoParallel(detectCores())
 
 coefsdt = rbindlist(mclapply(coef_files, fread, mc.cores=detectCores()),fill=T,use.names=T)
 
-# fill missing asp and slp
+# fill missing asp and slp and
 coefsdt[is.na(asp), asp:=median(asp, na.rm=T), by = set]
 coefsdt[is.na(slp), slp:=median(slp, na.rm=T), by = set]
 
@@ -80,7 +81,7 @@ for(b in blocks){
 	if(bend > nrow(coefsdt))bend = nrow(coefsdt)
 
 #	msynth = mclapply(5001:5010, getMonthlySynthetics)
-	msynth = mclapply(bstart:bend, getMonthlySynthetics,mc.cores=detectCores())
+	msynth = mclapply(bstart:bend, getMonthlySynthetics,mc.cores=detectCores(),mc.preschedule=F)
 	#
 
 	msynthclass = unlist(lapply(lapply(msynth,class),"[[",1))
@@ -116,7 +117,8 @@ for(b in blocks){
 	#write.csv(coefsdt2, paste0("../../data/features/featureSet_20171102_hasFilterAndEcoz_bl",(b%/%5000+1),".csv"), row.names=F)
 	#write.csv(coefsdt2, paste0("../../data/features/featureSet_20171201_hasFilterAndEcozAndDEMAndSW_bl",(b%/%5000+1),".csv"), row.names=F)
 	#write.csv(coefsdt2, paste0("../../data/features/featureSet_20180111_hasFilterAndEcozAndDEMAndSWAndChrom_bl",(b%/%5000+1),".csv"), row.names=F)
-	write.csv(coefsdt2, paste0("../../data/features/featureSet_20180118_coreSample_bl",(b%/%5000+1),".csv"), row.names=F)
+	#write.csv(coefsdt2, paste0("../../data/features/featureSet_20180118_coreSample_bl",(b%/%5000+1),".csv"), row.names=F)
+	write.csv(coefsdt2, paste0("../../data/features/featureSet_20180411_coreSample_bl",(b%/%5000+1),".csv"), row.names=F)
 	
 	print(Sys.time())
 	print("wrote data! block:")
@@ -124,24 +126,24 @@ for(b in blocks){
 }
 
 
-# which i is failing at monthifying?
-geti = function(x){
-
-	if(class(x) == "data.table"){
-		thei = x[1,i]
-	}else{
-		return(NULL)
-	}
-	return(thei)
-
-}
-
-ms_i = lapply(msynth, geti)
-goodi = unlist(ms_i)
-alli = 1:5000
-badi = alli[!alli %in% goodi]
-
-bms_i = lapply(msynth, geti)
-bgoodi = unlist(bms_i)
-alli = 1:5000
-bbadi = alli[!alli %in% bgoodi]
+## which i is failing at monthifying?
+#geti = function(x){
+#
+#	if(class(x) == "data.table"){
+#		thei = x[1,i]
+#	}else{
+#		return(NULL)
+#	}
+#	return(thei)
+#
+#}
+#
+#ms_i = lapply(msynth, geti)
+#goodi = unlist(ms_i)
+#alli = 1:5000
+#badi = alli[!alli %in% goodi]
+#
+#bms_i = lapply(msynth, geti)
+#bgoodi = unlist(bms_i)
+#alli = 1:5000
+#bbadi = alli[!alli %in% bgoodi]

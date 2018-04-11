@@ -212,7 +212,7 @@ getMonthlySynthetics = function(i){
 												 full.names=T,
 												 pattern = paste0(py-1,"-",py+1))
 		if(length(fmfiles) == 0)
-			fmfiles = "../../data/nc_summary/dummy.csv"
+			return(NULL)#fmfiles = "../../data/nc_summary/dummy.csv"
 		fmetrics = fread(fmfiles[1])
 	}
 	if(length(fmfiles) > 1)
