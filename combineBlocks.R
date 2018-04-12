@@ -23,8 +23,12 @@ dropNames = names(lc)[grep(toDrop, names(lc))]
 tl[, (dropNames) := NULL]
 lc[, (dropNames) := NULL]
 
+# drop the land cover classes (can go look them up later)
+tl[, Toolik_SurfaceClass_Mosaic_ABoVE:= NULL]
+lc[, Scotty_classification_ABoVE := NULL]
+
 featuresdt = rbindlist(list(featuresdt, tl, lc), fill=T)
-featuresdt[,c("i.yr_end", "V1", "i.px", "i.py"):=NULL]
+featuresdt[,c("x","y","cell","i.yr_end", "V1", "i.px", "i.py"):=NULL]
 
 # try imputing here, by ecozone
 for(n in names(featuresdt)[!grepl("tile|set|pixel|ecozone", names(featuresdt))]){
